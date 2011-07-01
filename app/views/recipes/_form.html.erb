@@ -1,0 +1,44 @@
+<%= form_for(@recipe) do |f| %>
+  <% if @recipe.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@recipe.errors.count, "error") %> prohibited this recipe from being saved:</h2>
+
+      <ul>
+      <% @recipe.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :recipe_name %><br />
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+  Select all that apply: <br>
+    <%= collection_select :recipe, :category_ids,
+        Category.find(:all), :id, :name, {},
+        :multiple => true,
+        :name => 'recipe[category_ids][]' %>
+  </div>
+  <div class="field">
+    <%= f.label :servings%><br />
+    <%= f.text_field :serving %>
+  </div>
+  <div class="field">
+    <%= f.label :total_cost_in_dollars %> (for number of servings above)<br />
+    <%= f.text_field :price %>
+  </div>
+  <div class="field">
+    <%= f.label :ingredient_list %> (separate by commas)<br /> 
+    <%= f.text_area :ingredient %>
+  </div>
+  <div class="field">
+    <%= f.label :procedure %>  (separate by \)<br />
+    <%= f.text_area :procedure %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

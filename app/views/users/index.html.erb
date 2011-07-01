@@ -1,0 +1,31 @@
+<h1>Listing Users</h1>
+<center>
+Search by name or email:
+<% form_tag users_path, :method => 'get' do %>
+  <p>
+    <%= text_field_tag :search, params[:search] %>
+    <%= submit_tag "Stalk!", :name => nil %>
+  </p>
+  <%= will_paginate @users%>
+<% end %>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Email</th>
+    
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @users.each do |user| %>
+  <tr>
+    <td><%= link_to user.name, user %></td>
+    <td><%= user.email %></td>
+   </tr>
+<% end %>
+</table>
+</center>
+
+

@@ -1,0 +1,20 @@
+<p id="notice"><%= notice %></p>
+
+<h1><%= @user.name %></h1>
+
+
+<p>
+  <b>Email:</b>
+  <%= @user.email %>
+</p>
+
+<p>
+  <b>Recipes:</b>
+  <ul>
+  <% User.get_recipes(@user.id).each do |recipe| %> 
+		<li><%= link_to Recipe.find_by_id(recipe).name, recipe_path(recipe) %></li>
+  <% end %>
+  </ul>
+</p>
+
+<%= link_to 'Back', users_path %>

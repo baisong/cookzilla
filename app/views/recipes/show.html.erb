@@ -1,0 +1,113 @@
+
+<p id="notice"><%= notice %></p>
+<h1><%= @recipe.name %></h1> 
+<div id="ratings">
+Average Rating: 
+<% i = 0 %>
+<% unless @recipe.average_rating.nan? %>
+<% if (@recipe.average_rating - @recipe.average_rating.floor.to_f) > 0.67 %>
+	<% while i < average_rating.floor+1 %>
+		<img src="/images/star.png" />
+		<% i+=1 %>
+	<% end %>
+<% elsif (@recipe.average_rating - @recipe.average_rating.floor.to_f) < 0.33 %>
+	<%	while i < @recipe.average_rating.floor %>
+		<img src="/images/star.png" />
+		<% i+=1 %>
+	<% end %>
+<% else %>
+	<%	while i < @recipe.average_rating.floor%>
+		<img src="/images/star.png" />
+		<% i+=1 %>
+	<% end %>
+	<img src="/images/half-star.png" />
+<%end%>
+<%end%>
+</div>
+<br>
+<% if signed_in? %>
+Click on the stars to rate this recipe:
+<%-content_for(:scripts) do%>
+    <%= javascript_include_tag 'rating_ballot'%>
+<% end %>
+<%= form_for(rating_ballot, :remote => true, :html => { :class => 'rating_ballot' }) do |f| %>
+  <%= f.label("value_1", content_tag(:span, '1'), {:class=>"rating", :id=>"1"}) %>
+  <%= radio_button_tag("rating[value]", 1, current_user_rating == 1, :class => 'rating_button') %>
+  <%= f.label("value_2", content_tag(:span, '2'), {:class=>"rating", :id=>"2"})%>
+  <%= radio_button_tag("rating[value]", 2, current_user_rating == 2, :class => 'rating_button')%>
+  <%= f.label("value_3", content_tag(:span, '3'), {:class=>"rating", :id=>"3"})%>
+  <%= radio_button_tag("rating[value]", 3, current_user_rating == 3, :class => 'rating_button')%>
+  <%= f.label("value_4", content_tag(:span, '4'), {:class=>"rating", :id=>"4"})%>
+  <%= radio_button_tag("rating[value]", 4, current_user_rating == 4, :class => 'rating_button')%>
+  <%= f.label("value_5", content_tag(:span, '5'), {:class=>"rating", :id=>"5"})%>
+  <%= radio_button_tag("rating[value]", 5, current_user_rating == 5, :class => 'rating_button')  %>  
+
+    <%= hidden_field_tag("recipe_id", @recipe.id) %>
+    <%= f.submit :Submit %>
+	<% end %>
+<br>
+<br>
+<% end %>
+<p>
+  <b>Made by:</b>
+  <%= link_to Recipe.get_user(@recipe.username).first.name, user_path(@recipe.username) %>
+</p>
+
+<p>
+  <b>Categories:</b>
+  <ul>
+  <% Recipe.get_categories(@recipe.id).each do |category| %> 
+		<li><%= category.first.name %>
+		<% if category.first.name == "Vegetarian" %> 
+		<img src="/images/vegetarian.png" width="30" height="30"/>
+		<% elsif category.first.name == "Vegan" %> 
+		<img src="/images/vegan.png" width="30" height="30"/>
+		<% elsif category.first.name == "Gluten Free" %> 
+		<img src="/images/gluten_free.png" width="30" height="30"/>
+		<% elsif category.first.name == "MEAT!!!" %> 
+		<img src="/images/meat.png" width="30" height="30"/>
+		<% elsif category.first.name == "Cheap" %> 
+		<img src="/images/cheap.png" width="30" height="30"/>
+		<% elsif category.first.name == "Matt Ritter" %> 
+		<img src="/images/ritter.jpg" />
+		<% else %> 
+		<% end %> </li>
+  <% end %>
+  </ul>
+</p>
+
+
+
+<p>
+  <b>Servings:</b>
+  <%= @recipe.serving %>
+</p>
+
+<p>
+  <b>Estimated price per serving:</b>
+  <%=number_to_currency(@recipe.price/@recipe.serving, :unit => "$") unless @recipe.price.nil?%>
+</p>
+
+<p>
+  <b>Ingredients:</b>
+  <ul>
+  <% @recipe.ingredient.split(',').each do |c| %> 
+		<li><%= c%></li>
+   <% end %>
+   </ul>
+</p>
+
+<p>
+  <b>Procedure:</b>
+  <ol>
+  <% @recipe.procedure.split("\\").each do |c| %> 
+		<li><%= c%></li>
+   <% end %>
+   </ol>
+</p>
+
+<% if signed_in? %>
+<% if @recipe.username == current_user.id %>
+<%= link_to 'Edit', edit_recipe_path(@recipe) %> 
+<% end %>
+<% end %>

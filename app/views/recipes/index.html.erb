@@ -1,0 +1,155 @@
+<p id="notice"><%= notice %></p>
+<h1>Search Recipes</h1>
+<center>
+<div id="suggest">Suggested keywords:
+
+<a href="http://food.xvm.mit.edu/recipes?utf8=%E2%9C%93&search=vegan">vegan</a>
+<a href="http://food.xvm.mit.edu/recipes?utf8=%E2%9C%93&search=gluten+free">gluten free</a> 
+<a href="http://food.xvm.mit.edu/recipes?utf8=%E2%9C%93&search=requires+no+cooking+experience">requires no cooking experience</a> 
+<a href="http://food.xvm.mit.edu/recipes?utf8=%E2%9C%93&search=protein">protein</a> 
+<a href="http://food.xvm.mit.edu/recipes?utf8=%E2%9C%93&search=requires+no+stove">requires no stove</a> 
+<a href="http://food.xvm.mit.edu/recipes?utf8=%E2%9C%93&search=only+uses+staples">only uses staples</a> 
+<a href="http://food.xvm.mit.edu/recipes?utf8=%E2%9C%93&search=matt+ritter">Matt Ritter</a>
+
+</div>
+<% form_tag recipes_path, :method => 'get' do %>
+  <p>
+    <%= text_field_tag :search, params[:search] %>
+    <%= submit_tag "Go!", :name => nil %>
+  </p>
+  <%= will_paginate @recipes%>
+<% end %>
+</center>
+<script type="text/javascript" charset="utf-8">
+  $(function() {
+    new Highcharts.Chart({
+      chart: {
+        renderTo: "recipes_chart",
+		defaultSeriesType: "scatter"
+		
+      },
+	 credits: { enabled:false },
+      title: {
+        text: "Recipes by Day: Price per Serving"
+      },
+     xAxis: {
+        type: 'datetime',
+       
+    },
+      yAxis: {
+        title: {
+          text: "$/serving"
+        },
+		min: -0.1,
+		startOnTick: false,
+		tickInterval:1,
+      },
+	   tooltip: {
+        formatter: function() {
+          return Highcharts.dateFormat("%B %e, %Y", this.x) + ': ' +
+            "$" + Highcharts.numberFormat(this.y, 2);
+        }
+      },
+       series: [
+      <% @recipes.each do |recipes| %>
+      {
+        name: "<%= recipes.name %>",
+        data: [[<%= Recipe.get_date(recipes.id).to_i*1000%>, <%= recipes.price/recipes.serving%>]]
+      },
+	  
+      <% end %>
+      ]
+      
+    });
+  });
+  
+  $(function() {
+    new Highcharts.Chart({
+      chart: {
+        renderTo: "ratings_chart",
+		defaultSeriesType: "scatter"
+      },
+	 credits: { enabled:false },
+      title: {
+        text: "Recipes by Day: Ratings"
+      },
+      xAxis: {
+        type: 'datetime',
+       
+    },
+      yAxis: {
+        title: {
+          text: "Average Rating"
+        },
+		min:0.8,
+		max:5.2,
+		tickInterval:1,
+		endOnTick: false,
+		startOnTick: false,
+		
+      },
+	   tooltip: {
+        formatter: function() {
+          return Highcharts.dateFormat("%B %e, %Y", this.x) + ': ' +
+            Highcharts.numberFormat(this.y, 2);
+        }
+      },
+       series: [
+      <% @recipes.each do |recipes| %>
+      { name: "<%= recipes.name %>",
+        data: [[<%= Recipe.get_date(recipes.id).to_i*1000%>, <%= recipes.average_rating%>]]
+      },
+      <% end %>
+      ]
+      
+    });
+  });
+</script>
+<div id="search_results">
+<div id="charts">
+<div id="recipes_chart" ></div>
+<br>
+<div id="ratings_chart" ></div>
+</div>
+
+<div id="listings" >
+<center>
+<h2>Recipe Links</h2>
+</center>
+<table>
+ 
+
+<% @recipes.each do |recipe| %>
+  <tr>
+    <td>
+	<%= link_to recipe.name, recipe %>
+<br>
+	<div id="rating_bar">
+<% i = 0 %>
+<% unless recipe.average_rating.nan? %>
+<% if (recipe.average_rating - recipe.average_rating.floor.to_f) > 0.67 %>
+	<% while i < @recipe.average_rating.floor+1 %>
+		<img src="/images/star.png" />
+		<% i+=1 %>
+	<% end %>
+<% elsif (recipe.average_rating - recipe.average_rating.floor.to_f) < 0.33 %>
+	<%	while i < recipe.average_rating.floor %>
+		<img src="/images/star.png" />
+		<% i+=1 %>
+	<% end %>
+<% else %>
+	<%	while i < recipe.average_rating.floor%>
+		<img src="/images/star.png" />
+		<% i+=1 %>
+	<% end %>
+	<img src="/images/half-star.png" />
+<%end%>
+<%end%>
+</div>
+	</td>
+	
+  </tr>
+<% end %>
+</table>
+</div>
+</div>

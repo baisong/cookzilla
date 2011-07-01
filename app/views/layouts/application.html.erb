@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <link href='http://fonts.googleapis.com/css?family=Permanent+Marker' rel='stylesheet' type='text/css'>
+  <title>Pikazilla</title>
+  <%= stylesheet_link_tag "/stylesheets/light" %>
+  <%= javascript_include_tag 'jquery', 'rails', 'application', 'highcharts'%>
+  <%= yield :scripts%>
+  <%= csrf_meta_tag %>
+  </head>
+  <body>
+  <div id="content">
+    <div class="container">
+      <div id="header">
+        <h1>Pikazilla</h1>
+		<h2>A Continued Experiment in Cooperative Cooking</h2>
+	  </div>
+        <div id="nav">
+          <ul>
+            <li><%= link_to "Home", root_path %></li>
+            <li><%= link_to "Add a Recipe", new_recipe_path %></li>
+            <li><%= link_to "Profiles", users_path %></li>
+			<% if current_user %>
+			<li><%= link_to "Sign Out", signout_path %>
+			<%  else %>
+			<li><%= link_to "Sign In", "/auth/facebook" %>
+			<% end %></li>
+          </ul>
+        </div>
+      </div>
+	  
+      <div id="section">
+	  <div id="user_nav">
+		<% if current_user %>
+			Welcome back, <%= current_user.name %>! | 
+			<%= link_to 'Edit Your Profile', edit_user_path(current_user) %> 
+		<% end %>
+		</div>
+        <%= yield %>
+      </div>
+    </div>
+	</div>
+  </body>
+</html>
